@@ -1,4 +1,4 @@
-var connection = require('../db/connection');
+const connection = require('../db/connection');
 
 module.exports = {
 
@@ -21,23 +21,33 @@ module.exports = {
 
     async create(req, res) {
         const { name, email, phone_number, uf, city, password } = req.body;
-        await connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
-            name,
-            email,
-            phone_number,
-            uf,
-            city,
-            password,
-            new Date().toISOString()
-                .replace(/T/, ' ')
-                .replace(/\..+/, ''),
-            new Date().toISOString()
-                .replace(/T/, ' ')
-                .replace(/\..+/, '')
+        await connection.query('SELECT client.email FROM client WHERE client.email=?', [
+            email
         ], (err, rows) => {
             if (err) throw err
-            return res.json(rows);
+            if(rows[0]) {
+                return res.json({ error: "E-mail already registered!" })
+            }
+
+            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+                name,
+                email,
+                phone_number,
+                uf,
+                city,
+                password,
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, ''),
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, '')
+            ], (err, rows) => {
+                if (err) throw err
+                return res.json(rows);
+            })
         })
+        
     },
 
     async update(req, res) {
