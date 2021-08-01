@@ -15,7 +15,7 @@ module.exports = {
             id
         ], (err, rows) => {
             if (err) throw err
-            return res.json(rows[0])
+            return res.json(rows)
         })
     },
 
