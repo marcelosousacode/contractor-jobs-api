@@ -3,14 +3,14 @@ const cors = require('./cors');
 const routes = require('./routes');
 const bodyParser = require('body-parser');
 const jsonParser = bodyParser.json();
+require('dotenv').config();
 
 const app = express();
-const port = 3000;
 
 app.use(cors);
 app.use(jsonParser);
 app.use(routes);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`); 
+app.listen(process.env.PORT, () => {
+  console.log(`Example app listening on port ${process.env.PORT}`); 
 })

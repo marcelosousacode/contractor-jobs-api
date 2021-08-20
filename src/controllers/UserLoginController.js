@@ -8,7 +8,7 @@ module.exports = {
             password
         ], (err, rows) => {
             if (err) throw err
-            console.log(rows[0])
+            
             if(rows[0] == undefined) {
                 return res.json({ error: "E-mail or password incorrect!" })
             }

@@ -73,7 +73,6 @@ module.exports = {
 
     async delete(req, res) {
         const id = req.params.id;
-        console.log(id)
         await connection.query('DELETE FROM client where id = ?', 
         [
             id
