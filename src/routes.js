@@ -21,10 +21,10 @@ routes.post('/professionals', ProfessionalController.create);
 routes.put('/professionals/:id', ProfessionalController.update);
 routes.delete('/professionals/:id', ProfessionalController.delete);
 
-routes.get('/scheduling', SchedulingController.index);
-routes.get('/scheduling/:id', SchedulingController.show);
-routes.post('/scheduling', SchedulingController.create);
-routes.put('/scheduling/:id', SchedulingController.update);
-routes.delete('/scheduling/:id', SchedulingController.delete);
+routes.get('/schedulings', SchedulingController.index);
+routes.get('/schedulings/:id', SchedulingController.show);
+routes.post('/schedulings', SchedulingController.create);
+routes.put('/schedulings/:id', SchedulingController.update);
+routes.delete('/schedulings/:id', SchedulingController.delete);
 
 module.exports = routes;
