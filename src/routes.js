@@ -6,6 +6,7 @@ const ClientController = require('./controllers/ClientController');
 const ProfessionalController = require('./controllers/ProfessionalController');
 const UserLoginController = require('./controllers/UserLoginController');
 const SchedulingController = require('./controllers/SchedulingController');
+const ProfessionController = require('./controllers/ProfessionController')
 
 routes.get('/clients', ClientController.index);
 routes.get('/clients/:id', ClientController.show);
@@ -26,5 +27,11 @@ routes.get('/schedulings/:id', SchedulingController.show);
 routes.post('/schedulings', SchedulingController.create);
 routes.put('/schedulings/:id', SchedulingController.update);
 routes.delete('/schedulings/:id', SchedulingController.delete);
+
+routes.get("/professions", ProfessionController.index)
+routes.get("/professions/:id", ProfessionController.show)
+routes.post("/professions", ProfessionController.create)
+routes.put("/professions/:id", ProfessionController.update)
+routes.delete("/professions/:id", ProfessionController.delete)
 
 module.exports = routes;
