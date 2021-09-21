@@ -12,7 +12,7 @@ module.exports = {
             if(rows[0] == undefined) {
                 return res.json({ error: "E-mail or password incorrect!" })
             }
-            return res.json(rows)
+            return res.json(rows[0])
         })
     }
 }

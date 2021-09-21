@@ -7,7 +7,7 @@ const ProfessionalController = require('./controllers/ProfessionalController');
 const UserLoginController = require('./controllers/UserLoginController');
 const SchedulingController = require('./controllers/SchedulingController');
 const ProfessionController = require('./controllers/ProfessionController');
-const ProfessionalProfessionController = require('./controllers/ProfessionalProfessionController')
+const PaymentController = require('./controllers/PaymentController');
 
 routes.get('/clients', ClientController.index);
 routes.get('/clients/:id', ClientController.show);
@@ -35,7 +35,8 @@ routes.post("/professions", ProfessionController.create)
 routes.put("/professions/:id", ProfessionController.update)
 routes.delete("/professions/:id", ProfessionController.delete)
 
-routes.get("/professions_professionals", ProfessionalProfessionController.index)
-routes.get("/professions_professionals/:id", ProfessionalProfessionController.selectProfessionalsByProfession)
+routes.post('/payment/payment_intent', PaymentController.createPaymentIntent);
+routes.post('/payment/payment_intent/confirm', PaymentController.confirmPaymentIntent);
+routes.post('/payment/payment_method', PaymentController.createPaymentMethod);
 
 module.exports = routes;
