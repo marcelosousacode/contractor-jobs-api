@@ -1,4 +1,5 @@
-const stripe = require('../configs/stripe')
+const stripe = require('../configs/stripe');
+const connection = require('../db/connection');
 
 module.exports = {
     async createPaymentIntent(req, res) {
@@ -42,6 +43,28 @@ module.exports = {
     
         res.send({
             paymentMethod: paymentMethod.id
+        })
+    },
+    async savePayment(req, res) {
+        const { clientId, payment } = req.body;
+
+        await connection.query(`
+            INSERT INTO payment (
+                type_card,
+                number,
+                expiration_at,
+                code,
+                fk_client
+            ) VALUES (?, ?, ?, ?, ?)
+        `, [
+            payment.type,
+            payment.number,
+            payment.expirationAt,
+            payment.code,
+            clientId
+        ], (error, rows) => {
+            if(error) throw error;
+            return res.json(rows);
         })
     }
 }
