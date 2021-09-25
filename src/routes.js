@@ -41,5 +41,6 @@ routes.get("/professions_professionals/:id", ProfessionalProfessionController.se
 routes.post('/payment/payment_intent', PaymentController.createPaymentIntent);
 routes.post('/payment/payment_intent/confirm', PaymentController.confirmPaymentIntent);
 routes.post('/payment/payment_method', PaymentController.createPaymentMethod);
+routes.post('/payment', PaymentController.savePayment);
 
 module.exports = routes;
