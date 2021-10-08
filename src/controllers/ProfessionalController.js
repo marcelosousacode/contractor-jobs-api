@@ -49,9 +49,9 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, photo, uf, city, password, rate, description } = req.body;
+        const { name, email, cpf, phone_number, photo, uf, city, password, rate, description, start_time, end_time } = req.body;
 
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, start_time=?, end_time=?, updated_at=? WHERE professional.id=?', [
             name,
             email,
             cpf,
@@ -62,6 +62,8 @@ module.exports = {
             password,
             rate,
             description,
+            start_time,
+            end_time,
             new Date().toISOString()
                 .replace(/T/, ' ')
                 .replace(/\..+/, ''),
