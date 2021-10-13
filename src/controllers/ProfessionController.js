@@ -27,7 +27,6 @@ module.exports = {
     },
 
     async update(req, res){
-        console.log(req.body.name)
         await connection.query("UPDATE profession SET name = ? WHERE id=?", [
             req.body.name,
             req.params.id

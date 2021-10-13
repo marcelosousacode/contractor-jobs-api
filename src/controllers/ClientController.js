@@ -26,22 +26,16 @@ module.exports = {
         ], (err, rows) => {
             if (err) throw err
             if(rows[0]) {
-                return res.json({ error: "E-mail already registered!" })
+                return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 name,
                 email,
                 phone_number,
                 uf,
                 city,
-                password,
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, ''),
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, '')
+                password
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
@@ -53,7 +47,7 @@ module.exports = {
     async update(req, res) {
         const id = req.params.id;
         const { name, email, cpf, phone_number, uf, city, password } = req.body;
-        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, uf=?, city=?, password=?, updated_at=? WHERE client.id=?', [
+        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, uf=?, city=?, password=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
             name,
             email,
             cpf,
@@ -61,9 +55,6 @@ module.exports = {
             uf,
             city,
             password,
-            new Date().toISOString()
-                .replace(/T/, ' ')
-                .replace(/\..+/, ''),
             id
         ], (err, rows) => {
             if (err) throw err

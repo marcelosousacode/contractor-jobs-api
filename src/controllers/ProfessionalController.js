@@ -24,22 +24,16 @@ module.exports = {
         ], (err, rows) => {
             if (err) throw err
             if (rows[0]) {
-                return res.json({ error: "E-mail already registered!" })
+                return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO professional (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+            connection.query('INSERT INTO professional (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 name,
                 email,
                 phone_number,
                 uf,
                 city,
-                password,
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, ''),
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, '')
+                password
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
@@ -49,9 +43,9 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, photo, uf, city, password, rate, description } = req.body;
+        const { name, email, cpf, phone_number, photo, uf, city, password, rate, description, start_time, end_time } = req.body;
 
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?', [
             name,
             email,
             cpf,
@@ -62,9 +56,8 @@ module.exports = {
             password,
             rate,
             description,
-            new Date().toISOString()
-                .replace(/T/, ' ')
-                .replace(/\..+/, ''),
+            start_time,
+            end_time,
             id
         ], (err, rows) => {
             if (err) throw err
