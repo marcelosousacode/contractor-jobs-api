@@ -40,7 +40,6 @@ module.exports = {
             })
         })
     },
-
     async update(req, res) {
         const id = req.params.id;
         const { name, email, cpf, phone_number, photo, uf, city, password, rate, description, start_time, end_time } = req.body;

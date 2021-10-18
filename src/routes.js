@@ -41,7 +41,9 @@ routes.delete("/professions/:id", ProfessionController.delete)
 
 routes.get("/professions_professionals", ProfessionalProfessionController.index)
 routes.get("/professions_professionals/:id", ProfessionalProfessionController.selectProfessionalsByProfession)
+
 routes.post('/payment/payment_intent', PaymentController.createPaymentIntent);
+routes.get('/payment/payment_intent/:id', PaymentController.retrievePaymentIntent);
 routes.post('/payment/payment_intent/confirm', PaymentController.confirmPaymentIntent);
 routes.post('/payment/payment_method', PaymentController.createPaymentMethod);
 routes.post('/payment', PaymentController.savePayment);

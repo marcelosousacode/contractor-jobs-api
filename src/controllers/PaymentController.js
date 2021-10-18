@@ -70,26 +70,47 @@ module.exports = {
             });
         }
     },
-    async savePayment(req, res) {
-        const { clientId, payment } = req.body;
+    async retrievePaymentIntent(req, res) {
+        const { id } = req.params;
 
-        await connection.query(`
-            INSERT INTO payment (
-                type_card,
-                number,
-                expiration_at,
-                code,
-                fk_client
-            ) VALUES (?, ?, ?, ?, ?)
-        `, [
-            payment.type,
-            payment.number,
-            payment.expirationAt,
-            payment.code,
-            clientId
-        ], (error, rows) => {
-            if (error) throw error;
-            return res.json(rows);
-        })
+        try {
+            const paymentIntent = await stripe.paymentIntents.retrieve(
+                id
+            );
+
+            res.send(paymentIntent);
+        } catch (error) {
+            res.send({
+                status: error.statusCode,
+                type: error.type,
+                message: error.raw.message
+            });
+        }
+    },
+    async savePayment(req, res) {
+        const { clientId, professionalId, paymentIntent } = req.body;
+
+        try {
+            await connection.query(`
+                INSERT INTO payment (
+                    fk_client,
+                    fk_professional,
+                    payment_intent
+                ) VALUES (?, ?, ?)
+            `, [
+                clientId,
+                professionalId,
+                paymentIntent
+            ], (error, rows) => {
+                if (error) throw error;
+    
+                return res.json({
+                    success: true,
+                    rows
+                });
+            })
+        } catch(error) {
+            res.send(error);
+        } 
     }
 }
