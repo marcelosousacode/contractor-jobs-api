@@ -90,6 +90,16 @@ module.exports = {
     async savePayment(req, res) {
         const { clientId, professionalId, paymentIntent } = req.body;
 
+        if(paymentIntent === '') {
+            return res.status(400).end({
+                success: false,
+                error: {
+                    errno: 1048,
+                    sqlMessage: "Column 'payment_intent' cannot be null"
+                }
+            })
+        }
+
         try {
             await connection.query(`
                 INSERT INTO payment (
@@ -102,15 +112,21 @@ module.exports = {
                 professionalId,
                 paymentIntent
             ], (error, rows) => {
-                if (error) throw error;
+                if (error) res.status(400).json({
+                    success: false,
+                    error
+                });
     
-                return res.json({
+                res.status(201).json({
                     success: true,
                     rows
                 });
             })
         } catch(error) {
-            res.send(error);
+            res.status(400).send({
+                success: false,
+                error
+            });
         } 
     }
 }
