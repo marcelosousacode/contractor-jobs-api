@@ -112,18 +112,20 @@ module.exports = {
                 professionalId,
                 paymentIntent
             ], (error, rows) => {
-                if (error) res.status(400).json({
-                    success: false,
-                    error
-                });
+                if (error) {
+                    return res.status(400).send({
+                        success: false,
+                        error
+                    });
+                }
     
-                res.status(201).json({
+                return res.status(201).json({
                     success: true,
                     rows
                 });
             })
         } catch(error) {
-            res.status(400).send({
+            return res.status(400).send({
                 success: false,
                 error
             });
