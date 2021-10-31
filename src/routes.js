@@ -11,41 +11,45 @@ const ProfessionController = require('./controllers/ProfessionController');
 const ProfessionalProfessionController = require('./controllers/ProfessionalProfessionController')
 const PaymentController = require('./controllers/PaymentController');
 
-routes.get('/clients', ClientController.index);
-routes.get('/clients/:id', ClientController.show);
+const auth = require("./configs/auth")
+
+routes.get('/clients', auth, ClientController.index);
+routes.get('/clients/:id', auth, ClientController.show);
 routes.post('/clients', ClientController.create);
-routes.put('/clients/:id', ClientController.update);
-routes.delete('/clients/:id', ClientController.delete);
+routes.put('/clients/:id', auth, ClientController.update);
+routes.delete('/clients/:id', auth, ClientController.delete);
 
-routes.post('/login', UserLoginController.login);
+routes.get('/login/:user', UserLoginController.login);
+routes.post('/validateToken', UserLoginController.validateToken);
+routes.get('/user_logged', auth, UserLoginController.userLogged);
 
-routes.get('/professionals', ProfessionalController.index);
-routes.get('/professionals/:id', ProfessionalController.show);
+routes.get('/professionals', auth, ProfessionalController.index);
+routes.get('/professionals/:id', auth, ProfessionalController.show);
 routes.post('/professionals', ProfessionalController.create);
-routes.put('/professionals/:id', ProfessionalController.update);
-routes.delete('/professionals/:id', ProfessionalController.delete);
+routes.put('/professionals/:id', auth, ProfessionalController.update);
+routes.delete('/professionals/:id', auth, ProfessionalController.delete);
 
-routes.get('/schedulings', SchedulingController.index);
-routes.get('/schedulings/:id', SchedulingController.show);
-routes.post('/schedulings', SchedulingController.create);
-routes.put('/schedulings/:id', SchedulingController.update);
-routes.delete('/schedulings/:id', SchedulingController.delete);
+routes.get('/schedulings', auth, SchedulingController.index);
+routes.get('/schedulings/:id', auth, SchedulingController.show);
+routes.post('/schedulings', auth, SchedulingController.create);
+routes.put('/schedulings/:id', auth, SchedulingController.update);
+routes.delete('/schedulings/:id', auth, SchedulingController.delete);
 
-routes.get('/schedulings_professional/:id', SchedulingProfessionalController.index);
+routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
 routes.get("/professions", ProfessionController.index)
-routes.get("/professions/:id", ProfessionController.show)
-routes.post("/professions", ProfessionController.create)
-routes.put("/professions/:id", ProfessionController.update)
-routes.delete("/professions/:id", ProfessionController.delete)
+routes.get("/professions/:id", auth, ProfessionController.show)
+routes.post("/professions", auth, ProfessionController.create)
+routes.put("/professions/:id", auth, ProfessionController.update)
+routes.delete("/professions/:id", auth, ProfessionController.delete)
 
-routes.get("/professions_professionals", ProfessionalProfessionController.index)
-routes.get("/professions_professionals/:id", ProfessionalProfessionController.selectProfessionalsByProfession)
+routes.get("/professions_professionals", auth, ProfessionalProfessionController.index)
+routes.get("/professions_professionals/:id", auth, ProfessionalProfessionController.selectProfessionalsByProfession)
 
-routes.post('/payment/payment_intent', PaymentController.createPaymentIntent);
-routes.get('/payment/payment_intent/:id', PaymentController.retrievePaymentIntent);
-routes.post('/payment/payment_intent/confirm', PaymentController.confirmPaymentIntent);
-routes.post('/payment/payment_method', PaymentController.createPaymentMethod);
-routes.post('/payment', PaymentController.savePayment);
+routes.post('/payment/payment_intent', auth, PaymentController.createPaymentIntent);
+routes.get('/payment/payment_intent/:id', auth, PaymentController.retrievePaymentIntent);
+routes.post('/payment/payment_intent/confirm', auth, PaymentController.confirmPaymentIntent);
+routes.post('/payment/payment_method', auth, PaymentController.createPaymentMethod);
+routes.post('/payment', auth, PaymentController.savePayment);
 
 module.exports = routes;

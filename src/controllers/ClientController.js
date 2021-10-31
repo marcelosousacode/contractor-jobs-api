@@ -1,7 +1,8 @@
 const connection = require('../db/connection');
+const jwt = require("jsonwebtoken")
+const crypto = require("../configs/crypto")
 
 module.exports = {
-
     async index(req, res) {
         await connection.query('SELECT * FROM client', (err, rows) => {
             if (err) throw err
@@ -20,25 +21,38 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { name, email, phone_number, uf, city, password } = req.body;
+        const user = req.body;
+        
+        const passwordEncrypted = await crypto.hash(user.password)
+
         await connection.query('SELECT client.email FROM client WHERE client.email=?', [
-            email
+            user.email
         ], (err, rows) => {
             if (err) throw err
             if(rows[0]) {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
-                name,
-                email,
-                phone_number,
-                uf,
-                city,
-                password
+            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+                user.name,
+                user.email,
+                user.phone_number,
+                user.uf,
+                user.city,
+                passwordEncrypted,
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, ''),
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, '')
             ], (err, rows) => {
                 if (err) throw err
-                return res.json(rows);
+
+                const {password, ...userResp} = user
+                user.password = undefined
+
+                return res.send(rows);
             })
         })
         

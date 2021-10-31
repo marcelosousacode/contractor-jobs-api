@@ -1,4 +1,5 @@
 const connection = require('../db/connection');
+const crypto = require("../configs/crypto")
 
 module.exports = {
     async index(req, res) {
@@ -19,6 +20,9 @@ module.exports = {
 
     async create(req, res) {
         const { name, email, phone_number, uf, city, password } = req.body;
+
+        const passwordEncrypted = await crypto.hash(password)
+
         await connection.query('SELECT professional.email FROM professional WHERE email=?', [
             email
         ], (err, rows) => {
@@ -33,7 +37,13 @@ module.exports = {
                 phone_number,
                 uf,
                 city,
-                password
+                passwordEncrypted,
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, ''),
+                new Date().toISOString()
+                    .replace(/T/, ' ')
+                    .replace(/\..+/, '')
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
@@ -44,7 +54,9 @@ module.exports = {
         const id = req.params.id;
         const { name, email, cpf, phone_number, photo, uf, city, password, rate, description, start_time, end_time } = req.body;
 
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?', [
+        const passwordEncrypted = await crypto.hash(password)
+        
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
             name,
             email,
             cpf,
@@ -52,7 +64,7 @@ module.exports = {
             photo,
             uf,
             city,
-            password,
+            passwordEncrypted,
             rate,
             description,
             start_time,
