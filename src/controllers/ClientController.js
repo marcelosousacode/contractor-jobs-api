@@ -22,14 +22,14 @@ module.exports = {
 
     async create(req, res) {
         const user = req.body;
-        
+
         const passwordEncrypted = await crypto.hash(user.password)
 
         await connection.query('SELECT client.email FROM client WHERE client.email=?', [
             user.email
         ], (err, rows) => {
             if (err) throw err
-            if(rows[0]) {
+            if (rows[0]) {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
@@ -49,13 +49,13 @@ module.exports = {
             ], (err, rows) => {
                 if (err) throw err
 
-                const {password, ...userResp} = user
+                const { password, ...userResp } = user
                 user.password = undefined
 
                 return res.send(rows);
             })
         })
-        
+
     },
 
     async update(req, res) {
@@ -78,13 +78,40 @@ module.exports = {
 
     async delete(req, res) {
         const id = req.params.id;
-        await connection.query('DELETE FROM client where id = ?', 
-        [
-            id
-        ], (err, rows, fields) => {
-            if (err) throw err
-            return res.json(rows)
-        })
-    }
+        await connection.query('DELETE FROM client where id = ?',
+            [
+                id
+            ], (err, rows, fields) => {
+                if (err) throw err
+                return res.json(rows)
+            })
+    },
 
+    async updateImage(req, res) {
+        const id = req.params.id;
+        const { photo } = req.body;
+
+        try {
+            await connection.query(`
+                UPDATE client 
+                SET photo=?
+                WHERE id=?
+            `, [ photo, id ], (err, rows, fields) => {
+                if(err) {
+                    console.log(err)
+                    res.status(400).send({
+                        error: err.name,
+                        message: err.sqlMessage
+                    })
+                };
+                
+                return res.status(200).send(rows);
+            })
+        } catch (error) {
+            res.status(400).send({
+                error: err.name,
+                message: err.sqlMessage
+            });
+        }
+    }
 }

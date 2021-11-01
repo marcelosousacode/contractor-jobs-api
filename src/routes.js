@@ -18,6 +18,7 @@ routes.get('/clients/:id', auth, ClientController.show);
 routes.post('/clients', ClientController.create);
 routes.put('/clients/:id', auth, ClientController.update);
 routes.delete('/clients/:id', auth, ClientController.delete);
+routes.patch('/clients/profile_picture/:id', ClientController.updateImage);
 
 routes.get('/login/:user', UserLoginController.login);
 routes.post('/validateToken', UserLoginController.validateToken);
@@ -34,7 +35,6 @@ routes.get('/schedulings/:id', auth, SchedulingController.show);
 routes.post('/schedulings', auth, SchedulingController.create);
 routes.put('/schedulings/:id', auth, SchedulingController.update);
 routes.delete('/schedulings/:id', auth, SchedulingController.delete);
-
 routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
 routes.get("/professions", ProfessionController.index)
@@ -42,7 +42,6 @@ routes.get("/professions/:id", auth, ProfessionController.show)
 routes.post("/professions", auth, ProfessionController.create)
 routes.put("/professions/:id", auth, ProfessionController.update)
 routes.delete("/professions/:id", auth, ProfessionController.delete)
-
 routes.get("/professions_professionals", auth, ProfessionalProfessionController.index)
 routes.get("/professions_professionals/:id", auth, ProfessionalProfessionController.selectProfessionalsByProfession)
 
