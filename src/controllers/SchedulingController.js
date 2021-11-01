@@ -20,7 +20,7 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { date, title, start_time, end_time, professionalId, clientId } = req.body;
+        const { date, title, description, start_time, end_time, professionalId, clientId } = req.body;
         await connection.query(`SELECT (SELECT id FROM professional 
                 WHERE id = ? 
                 AND ? >= start_time 
@@ -45,9 +45,10 @@ module.exports = {
                             ], (err, rows) => {
                             if (err) throw err
                             if(rows[0].time_valid || rows[0].time_valid === null) {
-                                connection.query('INSERT INTO scheduling (date, title, start, end, fk_professional, fk_client, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+                                connection.query('INSERT INTO scheduling (date, title, description, start, end, fk_professional, fk_client, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                                     date,
                                     title,
+                                    description,
                                     start_time,
                                     end_time,
                                     professionalId,
@@ -69,8 +70,9 @@ module.exports = {
     async update(req, res) {
         const id = req.params.id;
         const { title, date, start, end } = req.body;
-        await connection.query('UPDATE scheduling SET title=?, date=?, start=?, end=?, updated_at=CURRENT_TIMESTAMP() WHERE scheduling.id=?', [
+        await connection.query('UPDATE scheduling SET title=?, description=?, date=?, start=?, end=?, updated_at=CURRENT_TIMESTAMP() WHERE scheduling.id=?', [
             title,
+            description,
             date,
             start,
             end,
