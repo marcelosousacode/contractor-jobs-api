@@ -67,6 +67,18 @@ module.exports = {
         
     },
 
+    async updateAproved(req, res) {
+        const id = req.params.id;
+        console.log("entrou")
+
+        await connection.query('UPDATE scheduling SET aproved=true WHERE scheduling.id=?', [
+            req.params.id
+        ], (err, rows) => {
+            if (err) throw err
+            return res.json(rows);
+        })
+    },
+
     async update(req, res) {
         const id = req.params.id;
         const { title, date, start, end } = req.body;

@@ -10,7 +10,8 @@ module.exports = {
         const [hashType, hash] = req.headers.authorization.split(" ")
         const [email, password] = Buffer.from(hash, "base64").toString().split(":")
 
-        await connection.query('SELECT * FROM ' + req.params.user + ' WHERE email=?', [
+        const type = req.params.user
+        await connection.query('SELECT * FROM ' + type + ' WHERE email=?', [
             email,
         ], (err, rows) => {
             
@@ -28,7 +29,10 @@ module.exports = {
     
                 const token = jwt.sign({ user: {id: rows[0].id, type: req.params.user} }, process.env.authSecret, { expiresIn: 86400 })
 
-                const {password, ...dataUser} = rows[0]
+                const { password, ...data } = rows[0]
+                const dataUser = { ...data, type }
+
+                console.log(dataUser)
                 return res.send({dataUser, token });
             }).catch(err => {
                 console.log(err)
@@ -48,11 +52,11 @@ module.exports = {
        const id = req.decoded.id;
        const type = req.decoded.type
 
-        await connection.query('SELECT * FROM '+ type + ' WHERE client.id=?', [
+       await connection.query('SELECT * FROM '+ type + ' WHERE ' + type + '.id=?', [
             id
         ], (err, rows) => {
             if (err) throw err
-            return res.json(rows[0])
+            return res.send({ ...rows[0], type })
         })
     },
 }
