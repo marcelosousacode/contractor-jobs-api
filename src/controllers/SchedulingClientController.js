@@ -8,7 +8,7 @@ module.exports = {
 
         await connection.query(`SELECT DISTINCT client.name, client.email, client.phone_number, client.uf, client.city, scheduling.id, scheduling.title, scheduling.description, scheduling.start, scheduling.end FROM scheduling
         INNER JOIN professional ON professional.id = scheduling.fk_professional
-        INNER JOIN client ON client.id = scheduling.fk_client WHERE professional.id = ?;`, [
+        INNER JOIN client ON client.id = scheduling.fk_client WHERE professional.id = ? AND scheduling.aproved=false;`, [
             idProfessionalLogged
         ], (err, rows) => {
             if (err) throw err
