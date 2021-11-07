@@ -39,6 +39,7 @@ routes.patch('/schedulings_aproved/:id', auth, SchedulingController.updateAprove
 routes.delete('/schedulings/:id', auth, SchedulingController.delete);
 routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
+routes.get('/requests_schedulings_client/:id', auth, SchedulingClientController.index)
 routes.get('/requests_schedulings/:id', auth, SchedulingClientController.show)
 
 routes.get("/professions", ProfessionController.index)
