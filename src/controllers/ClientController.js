@@ -98,7 +98,6 @@ module.exports = {
                 WHERE id=?
             `, [ photo, id ], (err, rows, fields) => {
                 if(err) {
-                    console.log(err)
                     res.status(400).send({
                         error: err.name,
                         message: err.sqlMessage

@@ -32,10 +32,9 @@ module.exports = {
                 const { password, ...data } = rows[0]
                 const dataUser = { ...data, type }
 
-                console.log(dataUser)
                 return res.send({dataUser, token });
             }).catch(err => {
-                console.log(err)
+                throw err
             })
         })
     },
