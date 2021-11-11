@@ -91,6 +91,32 @@ module.exports = {
         })
     },
 
+    async updateStatus(req, res) {
+        const { status } = req.body;
+        const id = req.params.id;
+        await connection.query('UPDATE scheduling SET status=? WHERE scheduling.id=?', [
+            status,
+            id
+        ], (err, rows) => {
+            if (err) throw err
+            return res.json(rows);
+        })
+    },
+
+    async feedback(req, res) {
+        const { score, commentary, id } = req.body;
+        await connection.query('UPDATE scheduling SET rating=?, commentary=? WHERE id=?', [
+            score,
+            commentary,
+            id
+        ], (err, rows) => {
+
+            if (err) throw err
+            return res.json(rows)
+
+        })
+    },
+
     async delete(req, res) {
         const id = req.params.id;
         await connection.query('DELETE FROM scheduling where id = ?',
