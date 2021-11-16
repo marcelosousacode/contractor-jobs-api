@@ -12,7 +12,7 @@ const ProfessionalProfessionController = require('./controllers/ProfessionalProf
 const PaymentController = require('./controllers/PaymentController');
 const SchedulingClientController = require("./controllers/SchedulingClientController")
 
-const auth = require("./configs/auth")
+const auth = require("./configs/auth");
 
 routes.get('/clients', auth, ClientController.index);
 routes.get('/clients/:id', auth, ClientController.show);
@@ -38,6 +38,9 @@ routes.put('/schedulings/:id', auth, SchedulingController.update);
 routes.patch('/schedulings_status/:id', auth, SchedulingController.updateStatus);
 routes.post('/clients/rating', SchedulingController.feedback);
 routes.delete('/schedulings/:id', auth, SchedulingController.delete);
+routes.patch('/cancel_scheduling/:id', auth, SchedulingController.cancelScheduling)
+routes.patch('/confirm_scheduling/:id', auth, SchedulingController.confirmScheduling)
+
 routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
 routes.get('/requests_schedulings_client/:id', auth, SchedulingClientController.index)

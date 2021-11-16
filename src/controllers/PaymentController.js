@@ -1,6 +1,9 @@
 const stripe = require('../configs/stripe');
 const connection = require('../db/connection');
 
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
 module.exports = {
     async createPaymentIntent(req, res) {
         const { items } = req.body;
@@ -130,5 +133,5 @@ module.exports = {
                 error
             });
         } 
-    }
+    },
 }

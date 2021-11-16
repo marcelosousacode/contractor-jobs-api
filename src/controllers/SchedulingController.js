@@ -1,5 +1,13 @@
 const connection = require('../db/connection');
 
+const sgMail = require('@sendgrid/mail')
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+const path = require("path");
+const ejs = require("ejs");
+
+const {formatDate, formatToHours}= require("../utils/formatDateTime")
+
 module.exports = {
 
     async index(req, res) {
@@ -20,7 +28,16 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { date, title, description, start_time, end_time, professionalId, clientId } = req.body;
+        const { date, title, description, start_time, end_time, professionalId, clientId, email } = req.body;
+
+        let status = ""
+
+        if (clientId) {
+            status = "PENDENTE"
+        } else {
+            status = "OCUPADO"
+        }
+
         await connection.query(`SELECT (SELECT id FROM professional 
                 WHERE id = ? 
                 AND ? >= start_time 
@@ -45,16 +62,52 @@ module.exports = {
             ], (err, rows) => {
                 if (err) throw err
                 if (rows[0].time_valid || rows[0].time_valid === null) {
-                    connection.query('INSERT INTO scheduling (date, title, description, start, end, fk_professional, fk_client, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+                    connection.query('INSERT INTO scheduling (date, title, description, start, end, fk_professional, fk_client, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                         date,
                         title,
                         description,
                         start_time,
                         end_time,
                         professionalId,
-                        clientId
+                        clientId,
+                        status
+
                     ], (err, rows) => {
                         if (err) throw err
+
+                        if(clientId){
+                            let emailTemplate;
+
+                            ejs.renderFile(path.join(__dirname, "../views_emails/request_email.ejs"), {
+                                scheduling_subject: data.title,
+                                scheduling_description: data.description,
+                                scheduling_date: formatDate(data.date),
+                                scheduling_time: `${formatToHours(data.start, false)} às ${formatToHours(data.end, false)}`
+                            }).then(result => {
+                                emailTemplate = result;
+                
+                                const msg = {
+                                    to: email, // Change to your recipient
+                                    from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
+                                    subject: 'Nova solicitação de agendamento',
+                                    html: emailTemplate
+                                };
+                
+                                sgMail.send(msg).then(() => {
+                                    (async () => {
+                                        return res.json(rows);
+                                    })()
+                                }).catch((error) => {
+                                    console.error(err)
+                                })
+                            })
+                            .catch(err => {
+                                console.error(err)
+                            });
+                        }else{
+                            return res.json(rows);
+                        }
+
                         return res.json(rows);
                     })
                 } else {
@@ -64,14 +117,88 @@ module.exports = {
         })
     },
 
-    async updateAproved(req, res) {
+    async confirmScheduling(req, res) {
         const id = req.params.id;
+        const data = req.body
 
-        await connection.query('UPDATE scheduling SET aproved=true WHERE scheduling.id=?', [
-            req.params.id
+        await connection.query('UPDATE scheduling SET status="APROVADO" WHERE scheduling.id=?', [
+            id
         ], (err, rows) => {
             if (err) throw err
-            return res.json(rows);
+
+            let emailTemplate;
+
+            ejs.renderFile(path.join(__dirname, "../views_emails/confirm_email.ejs"), {
+                scheduling_subject: data.title,
+                scheduling_description: data.description,
+                scheduling_date: data.date,
+                scheduling_time: `${data.start} às ${data.end}`,
+                link_app: process.env.LINK_APP
+            }).then(result => {
+                emailTemplate = result;
+
+                const msg = {
+                    to: data.email, // Change to your recipient
+                    from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
+                    subject: 'Agendamento confirmado',
+                    html: emailTemplate
+                };
+
+                sgMail.send(msg).then(() => {
+                    (async () => {
+                        return res.json(rows);
+                    })()
+                }).catch((error) => {
+                    console.error(err)
+                })
+            })
+            .catch(err => {
+                console.error(err)
+            });
+        })
+    },
+
+    async cancelScheduling(req, res) {
+        const id = req.params.id;
+        const data = req.body
+
+        await connection.query('UPDATE scheduling SET status="CANCELADO", text_reason=? WHERE scheduling.id=?', [
+            data.text_reason,
+            id
+        ], (err, rows) => {
+            if (err) throw err
+
+            let emailTemplate;
+
+            ejs.renderFile(path.join(__dirname, "../views_emails/cancel_email.ejs"), {
+                scheduling_subject: data.title,
+                scheduling_description: data.description,
+                scheduling_date: data.date,
+                scheduling_time: `${data.start} às ${data.end}`,
+                scheduling_reason: data.text_reason,
+                link_app: process.env.LINK_APP
+            }).then(result => {
+                emailTemplate = result;
+
+                const msg = {
+                    to: data.email, // Change to your recipient
+                    from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
+                    subject: 'Agendamento cancelado',
+                    html: emailTemplate,
+                    link_app: process.env.LINK_APP
+                };
+
+                sgMail.send(msg).then(() => {
+                    (async () => {
+                        return res.json(rows);
+                    })()
+                }).catch((err) => {
+                    console.error(err)
+                })
+            })
+            .catch(err => {
+                console.error(err)
+            });
         })
     },
 
@@ -119,6 +246,7 @@ module.exports = {
 
     async delete(req, res) {
         const id = req.params.id;
+
         await connection.query('DELETE FROM scheduling where id = ?',
             [
                 id
@@ -127,5 +255,4 @@ module.exports = {
                 return res.json(rows)
             })
     }
-
 }
