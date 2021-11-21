@@ -33,19 +33,17 @@ module.exports = {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO client (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
+            connection.query('INSERT INTO client (name, email, phone_number, cep, uf, city, address, district, number, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 user.name,
                 user.email,
                 user.phone_number,
+                user.cep,
                 user.uf,
                 user.city,
-                passwordEncrypted,
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, ''),
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, '')
+                user.address,
+                user.district,
+                user.number,
+                passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
 
@@ -60,14 +58,18 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, uf, city, password } = req.body;
-        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, uf=?, city=?, password=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
+        const { name, email, cpf, phone_number, cep, uf, address, district, number, city, password } = req.body;
+        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, password=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
             name,
             email,
             cpf,
             phone_number,
+            cep,
             uf,
             city,
+            address,
+            district,
+            number,
             password,
             id
         ], (err, rows) => {

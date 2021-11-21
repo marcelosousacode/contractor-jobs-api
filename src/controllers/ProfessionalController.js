@@ -19,7 +19,7 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { name, email, phone_number, uf, city, password } = req.body;
+        const { name, email, phone_number, cep, uf, city, address, district, number, password } = req.body;
 
         const passwordEncrypted = await crypto.hash(password)
 
@@ -31,19 +31,17 @@ module.exports = {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO professional (name, email, phone_number, uf, city, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+            connection.query('INSERT INTO professional (name, email, phone_number, cep, uf, city, password, address, district, number, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 name,
                 email,
                 phone_number,
+                cep,
                 uf,
                 city,
-                passwordEncrypted,
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, ''),
-                new Date().toISOString()
-                    .replace(/T/, ' ')
-                    .replace(/\..+/, '')
+                address,
+                district,
+                number,
+                passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
@@ -52,18 +50,21 @@ module.exports = {
     },
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, photo, uf, city, password, rate, description, start_time, end_time } = req.body;
+        const { name, email, cpf, phone_number, cep, uf, city, address, district, number, password, rate, description, start_time, end_time } = req.body;
 
         const passwordEncrypted = await crypto.hash(password)
         
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, photo=?, uf=?, city=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
             name,
             email,
             cpf,
             phone_number,
-            photo,
+            cep,
             uf,
             city,
+            address,
+            district,
+            number,
             passwordEncrypted,
             rate,
             description,
