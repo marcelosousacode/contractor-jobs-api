@@ -162,8 +162,9 @@ module.exports = {
         const id = req.params.id;
         const data = req.body
 
-        await connection.query('UPDATE scheduling SET status="CANCELADO", text_reason=? WHERE scheduling.id=?', [
+        await connection.query('UPDATE scheduling SET status="CANCELADO", text_reason=?, commentary=? WHERE scheduling.id=?', [
             data.text_reason,
+            data.commentary,
             id
         ], (err, rows) => {
             if (err) throw err
@@ -175,7 +176,7 @@ module.exports = {
                 scheduling_description: data.description,
                 scheduling_date: data.date,
                 scheduling_time: `${data.start} às ${data.end}`,
-                scheduling_reason: data.text_reason,
+                scheduling_reason: data.text_reason ? data.text_reason : data.commentary,
                 link_app: process.env.LINK_APP
             }).then(result => {
                 emailTemplate = result;
@@ -184,6 +185,50 @@ module.exports = {
                     to: data.email, // Change to your recipient
                     from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
                     subject: 'Agendamento cancelado',
+                    html: emailTemplate,
+                    link_app: process.env.LINK_APP
+                };
+
+                sgMail.send(msg).then(() => {
+                    (async () => {
+                        return res.json(rows);
+                    })()
+                }).catch((err) => {
+                    console.error(err)
+                })
+            })
+            .catch(err => {
+                console.error(err)
+            });
+        })
+    },
+
+    async notRealizedScheduling(req, res) {
+        const id = req.params.id;
+        const data = req.body
+        console.log(data)
+        await connection.query(`UPDATE scheduling SET status="NAO REALIZADO", ${data.commentary ? 'commentary' : 'text_reason'}=? WHERE scheduling.id=?`, [
+            data.commentary || data.text_reason,
+            id
+        ], (err, rows) => {
+            if (err) throw err
+
+            let emailTemplate;
+
+            ejs.renderFile(path.join(__dirname, "../views_emails/cancel_email.ejs"), {
+                scheduling_subject: data.title,
+                scheduling_description: data.description,
+                scheduling_date: data.date,
+                scheduling_time: `${data.start} às ${data.end}`,
+                scheduling_reason: data.commentary || data.text_reason,
+                link_app: process.env.LINK_APP
+            }).then(result => {
+                emailTemplate = result;
+
+                const msg = {
+                    to: data.email, // Change to your recipient
+                    from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
+                    subject: 'Agendamento não foi atendido!',
                     html: emailTemplate,
                     link_app: process.env.LINK_APP
                 };

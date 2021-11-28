@@ -5,9 +5,10 @@ module.exports = {
 
     async index(req, res) {
         const id = req.params.id;
-        await connection.query(`SELECT scheduling.*, client.name, client.email, client.phone_number, client.uf, client.city, client.email FROM scheduling
-            INNER JOIN client ON client.id = scheduling.fk_client
-            WHERE scheduling.fk_client=? ORDER BY scheduling.end ASC;`, [
+        await connection.query(`SELECT scheduling.*, professional.name, professional.email, professional.phone_number, professional.uf, professional.city, professional.email FROM scheduling
+        INNER JOIN client ON client.id = scheduling.fk_client
+        INNER JOIN professional ON professional.id = scheduling.fk_professional
+        WHERE scheduling.fk_client=?  ORDER BY scheduling.end ASC`, [
                 id
             ],
         (err, rows) => {
@@ -19,9 +20,9 @@ module.exports = {
     async show(req, res){
         const idProfessionalLogged = req.params.id
 
-        await connection.query(`SELECT DISTINCT client.name, client.email, client.phone_number, client.uf, client.city, scheduling.id, scheduling.title, scheduling.description, scheduling.start, scheduling.end FROM scheduling
+        await connection.query(`SELECT DISTINCT client.name, client.email, client.phone_number, client.uf, client.city, client.address, client.district, client.number, scheduling.* FROM scheduling
         INNER JOIN professional ON professional.id = scheduling.fk_professional
-        INNER JOIN client ON client.id = scheduling.fk_client WHERE professional.id = ? AND scheduling.status="PENDENTE"
+        INNER JOIN client ON client.id = scheduling.fk_client WHERE professional.id = ?
         ORDER BY scheduling.end ASC;`, [
             idProfessionalLogged
         ], (err, rows) => {

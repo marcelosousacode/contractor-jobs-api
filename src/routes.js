@@ -40,10 +40,11 @@ routes.post('/clients/rating', SchedulingController.feedback);
 routes.delete('/schedulings/:id', auth, SchedulingController.delete);
 routes.patch('/cancel_scheduling/:id', auth, SchedulingController.cancelScheduling)
 routes.patch('/confirm_scheduling/:id', auth, SchedulingController.confirmScheduling)
+routes.patch('/notrealized_scheduling/:id', auth, SchedulingController.notRealizedScheduling)
 
 routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
-routes.get('/requests_schedulings_client/:id', auth, SchedulingClientController.index)
+routes.get('/schedulings_client/:id', auth, SchedulingClientController.index)
 routes.get('/requests_schedulings/:id', auth, SchedulingClientController.show)
 
 routes.get("/professions", ProfessionController.index)
