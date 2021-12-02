@@ -21,4 +21,8 @@ async function verify(password, hash) {
     })
 }
 
-module.exports = { verify, hash }
+function createToken(){
+    return crypto.randomBytes(20).toString("hex")
+}
+
+module.exports = { verify, hash, createToken }
