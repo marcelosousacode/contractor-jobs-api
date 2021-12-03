@@ -38,10 +38,10 @@ module.exports = {
                 cep,
                 uf,
                 city,
+                passwordEncrypted,
                 address,
                 district,
                 number,
-                passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
@@ -86,5 +86,32 @@ module.exports = {
                 if (err) throw err
                 return res.json(rows)
             })
+    },
+
+    async updateImage(req, res) {
+        const id = req.params.id;
+        const { photo } = req.body;
+
+        try {
+            await connection.query(`
+                UPDATE professional 
+                SET photo=?
+                WHERE id=?
+            `, [ photo, id ], (err, rows, fields) => {
+                if(err) {
+                    return res.status(400).send({
+                        error: err.name,
+                        message: err.sqlMessage
+                    })
+                };
+                
+                return res.status(200).send(rows);
+            })
+        } catch (error) {
+            return res.status(400).send({
+                error: err.name,
+                message: err.sqlMessage
+            });
+        }
     }
 }

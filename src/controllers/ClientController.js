@@ -100,7 +100,7 @@ module.exports = {
                 WHERE id=?
             `, [ photo, id ], (err, rows, fields) => {
                 if(err) {
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: err.name,
                         message: err.sqlMessage
                     })
@@ -109,7 +109,7 @@ module.exports = {
                 return res.status(200).send(rows);
             })
         } catch (error) {
-            res.status(400).send({
+            return res.status(400).send({
                 error: err.name,
                 message: err.sqlMessage
             });

@@ -24,12 +24,16 @@ routes.patch('/clients/profile_picture/:id', ClientController.updateImage);
 routes.get('/login/:user', UserLoginController.login);
 routes.post('/validateToken', UserLoginController.validateToken);
 routes.get('/user_logged', auth, UserLoginController.userLogged);
+routes.post('/forgot_password', UserLoginController.forgotPassword);
+routes.post('/change_password', UserLoginController.changePassword);
+routes.post('/verify_token_password', UserLoginController.verifyTokenPassword);
 
 routes.get('/professionals', auth, ProfessionalController.index);
 routes.get('/professionals/:id', auth, ProfessionalController.show);
 routes.post('/professionals', ProfessionalController.create);
 routes.put('/professionals/:id', auth, ProfessionalController.update);
 routes.delete('/professionals/:id', auth, ProfessionalController.delete);
+routes.patch('/professionals/profile_picture/:id', ProfessionalController.updateImage);
 
 routes.get('/schedulings', auth, SchedulingController.index);
 routes.get('/schedulings/:id', auth, SchedulingController.show);
@@ -40,10 +44,11 @@ routes.post('/clients/rating', SchedulingController.feedback);
 routes.delete('/schedulings/:id', auth, SchedulingController.delete);
 routes.patch('/cancel_scheduling/:id', auth, SchedulingController.cancelScheduling)
 routes.patch('/confirm_scheduling/:id', auth, SchedulingController.confirmScheduling)
+routes.patch('/notrealized_scheduling/:id', auth, SchedulingController.notRealizedScheduling)
 
 routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
 
-routes.get('/requests_schedulings_client/:id', auth, SchedulingClientController.index)
+routes.get('/schedulings_client/:id', auth, SchedulingClientController.index)
 routes.get('/requests_schedulings/:id', auth, SchedulingClientController.show)
 
 routes.get("/professions", ProfessionController.index)
@@ -59,5 +64,6 @@ routes.get('/payment/payment_intent/:id', auth, PaymentController.retrievePaymen
 routes.post('/payment/payment_intent/confirm', auth, PaymentController.confirmPaymentIntent);
 routes.post('/payment/payment_method', auth, PaymentController.createPaymentMethod);
 routes.post('/payment', auth, PaymentController.savePayment);
+
 
 module.exports = routes;
