@@ -18,6 +18,19 @@ module.exports = {
         })
     },
 
+    async professionsList(req, res) {
+        const id = req.params.id;
+        await connection.query(`SELECT  profession.*, item_professional_profession.fk_professional, item_professional_profession.fk_profession  FROM item_professional_profession
+            INNER JOIN profession ON profession.id = item_professional_profession.fk_profession
+            WHERE fk_professional=?`, 
+            [id], 
+            (err, rows) => {
+                if (err) throw err
+                return res.json(rows)
+            }
+        )
+    },
+
     async create(req, res) {
         const { name, email, phone_number, cep, uf, city, address, district, number, password } = req.body;
 
@@ -38,23 +51,22 @@ module.exports = {
                 cep,
                 uf,
                 city,
-                passwordEncrypted,
                 address,
                 district,
                 number,
+                passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
                 return res.json(rows);
             })
         })
     },
+
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, cep, uf, city, address, district, number, password, rate, description, start_time, end_time } = req.body;
+        const { name, email, cpf, phone_number, cep, uf, city, address, district, number } = req.body;
 
-        const passwordEncrypted = await crypto.hash(password)
-        
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, password=?, rate=?, description=?, updated_at=? WHERE professional.id=?', [
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?', [
             name,
             email,
             cpf,
@@ -65,15 +77,40 @@ module.exports = {
             address,
             district,
             number,
-            passwordEncrypted,
-            rate,
-            description,
-            start_time,
-            end_time,
             id
         ], (err, rows) => {
             if (err) throw err
             return res.json(rows);
+        })
+    },
+
+    async updatePassword(req, res) {
+        const id = req.params.id;
+        const { password, newPassword } = req.body;
+
+        const passwordEncrypted = await crypto.hash(newPassword)
+
+        await connection.query('SELECT * FROM professional WHERE id=?', [
+            id,
+        ], (err, rows) => {
+
+            crypto.verify(password, rows[0].password).then(passwordsIsEqual =>{
+                
+                if (!passwordsIsEqual) {
+                    return res.json({ error: "Senha atual incorreta!" })
+                }
+
+                connection.query('UPDATE professional SET password=?, updated_at=CURRENT_TIMESTAMP() WHERE id=?', [
+                    passwordEncrypted,
+                    id
+                ], (err, rows) => {
+                    if (err) throw err
+                    return res.json("Senha alterada com sucesso!");
+                })
+                
+            }).catch(err => {
+                throw err
+            })
         })
     },
 
@@ -86,32 +123,5 @@ module.exports = {
                 if (err) throw err
                 return res.json(rows)
             })
-    },
-
-    async updateImage(req, res) {
-        const id = req.params.id;
-        const { photo } = req.body;
-
-        try {
-            await connection.query(`
-                UPDATE professional 
-                SET photo=?
-                WHERE id=?
-            `, [ photo, id ], (err, rows, fields) => {
-                if(err) {
-                    return res.status(400).send({
-                        error: err.name,
-                        message: err.sqlMessage
-                    })
-                };
-                
-                return res.status(200).send(rows);
-            })
-        } catch (error) {
-            return res.status(400).send({
-                error: err.name,
-                message: err.sqlMessage
-            });
-        }
     }
 }

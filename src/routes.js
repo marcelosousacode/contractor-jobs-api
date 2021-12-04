@@ -18,22 +18,21 @@ routes.get('/clients', auth, ClientController.index);
 routes.get('/clients/:id', auth, ClientController.show);
 routes.post('/clients', ClientController.create);
 routes.put('/clients/:id', auth, ClientController.update);
+routes.patch('/clients/:id', auth, ClientController.updatePassword);
 routes.delete('/clients/:id', auth, ClientController.delete);
 routes.patch('/clients/profile_picture/:id', ClientController.updateImage);
 
 routes.get('/login/:user', UserLoginController.login);
 routes.post('/validateToken', UserLoginController.validateToken);
 routes.get('/user_logged', auth, UserLoginController.userLogged);
-routes.post('/forgot_password', UserLoginController.forgotPassword);
-routes.post('/change_password', UserLoginController.changePassword);
-routes.post('/verify_token_password', UserLoginController.verifyTokenPassword);
 
 routes.get('/professionals', auth, ProfessionalController.index);
 routes.get('/professionals/:id', auth, ProfessionalController.show);
+routes.get('/professionals/professions_list/:id', auth, ProfessionalController.professionsList);
 routes.post('/professionals', ProfessionalController.create);
 routes.put('/professionals/:id', auth, ProfessionalController.update);
+routes.patch('/professionals/:id', auth, ProfessionalController.updatePassword);
 routes.delete('/professionals/:id', auth, ProfessionalController.delete);
-routes.patch('/professionals/profile_picture/:id', ProfessionalController.updateImage);
 
 routes.get('/schedulings', auth, SchedulingController.index);
 routes.get('/schedulings/:id', auth, SchedulingController.show);
@@ -56,14 +55,15 @@ routes.get("/professions/:id", auth, ProfessionController.show)
 routes.post("/professions", auth, ProfessionController.create)
 routes.put("/professions/:id", auth, ProfessionController.update)
 routes.delete("/professions/:id", auth, ProfessionController.delete)
+
 routes.get("/professions_professionals", auth, ProfessionalProfessionController.index)
 routes.get("/professions_professionals/:id", auth, ProfessionalProfessionController.selectProfessionalsByProfession)
+routes.post("/professions_professionals", auth, ProfessionalProfessionController.create)
 
 routes.post('/payment/payment_intent', auth, PaymentController.createPaymentIntent);
 routes.get('/payment/payment_intent/:id', auth, PaymentController.retrievePaymentIntent);
 routes.post('/payment/payment_intent/confirm', auth, PaymentController.confirmPaymentIntent);
 routes.post('/payment/payment_method', auth, PaymentController.createPaymentMethod);
 routes.post('/payment', auth, PaymentController.savePayment);
-
 
 module.exports = routes;

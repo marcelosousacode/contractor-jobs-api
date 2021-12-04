@@ -59,7 +59,7 @@ module.exports = {
     async update(req, res) {
         const id = req.params.id;
         const { name, email, cpf, phone_number, cep, uf, address, district, number, city, password } = req.body;
-        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, password=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
+        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
             name,
             email,
             cpf,
@@ -70,11 +70,40 @@ module.exports = {
             address,
             district,
             number,
-            password,
             id
         ], (err, rows) => {
             if (err) throw err
             return res.json(rows);
+        })
+    },
+
+    async updatePassword(req, res) {
+        const id = req.params.id;
+        const { password, newPassword } = req.body;
+
+        const passwordEncrypted = await crypto.hash(newPassword)
+
+        await connection.query('SELECT * FROM client WHERE id=?', [
+            id,
+        ], (err, rows) => {
+
+            crypto.verify(password, rows[0].password).then(passwordsIsEqual =>{
+                
+                if (!passwordsIsEqual) {
+                    return res.json({ error: "Senha atual incorreta!" })
+                }
+                
+                connection.query('UPDATE client SET password=?, updated_at=CURRENT_TIMESTAMP() WHERE id=?', [
+                    passwordEncrypted,
+                    id
+                ], (err, rows) => {
+                    if (err) throw err
+                    return res.json("Senha alterada com sucesso!");
+                })
+                
+            }).catch(err => {
+                throw err
+            })
         })
     },
 
@@ -100,7 +129,7 @@ module.exports = {
                 WHERE id=?
             `, [ photo, id ], (err, rows, fields) => {
                 if(err) {
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: err.name,
                         message: err.sqlMessage
                     })
@@ -109,7 +138,7 @@ module.exports = {
                 return res.status(200).send(rows);
             })
         } catch (error) {
-            return res.status(400).send({
+            res.status(400).send({
                 error: err.name,
                 message: err.sqlMessage
             });
