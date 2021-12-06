@@ -44,7 +44,7 @@ module.exports = {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO professional (name, email, phone_number, cep, uf, city, password, address, district, number, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+            connection.query('INSERT INTO professional (name, email, phone_number, cep, uf, city, address, district, number, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 name,
                 email,
                 phone_number,
