@@ -36,6 +36,7 @@ routes.delete('/professionals/:id', auth, ProfessionalController.delete);
 
 routes.get('/schedulings', auth, SchedulingController.index);
 routes.get('/schedulings/:id', auth, SchedulingController.show);
+routes.post('/validate_scheduling', auth, SchedulingController.validateScheduling);
 routes.post('/schedulings', auth, SchedulingController.create);
 routes.put('/schedulings/:id', auth, SchedulingController.update);
 routes.patch('/schedulings_status/:id', auth, SchedulingController.updateStatus);

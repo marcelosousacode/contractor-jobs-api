@@ -6,7 +6,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 const path = require("path");
 const ejs = require("ejs");
 
-const {formatDate, formatToHours}= require("../utils/formatDateTime")
+const { formatDate, formatToHours } = require("../utils/formatDateTime")
 
 module.exports = {
 
@@ -27,15 +27,50 @@ module.exports = {
         })
     },
 
+    async validateScheduling(req, res) {
+        const { date, title, description, start_time, end_time, professionalId, clientId } = req.body;
+
+        await connection.query(`SELECT (SELECT id FROM professional 
+            WHERE id = ? 
+            AND ? >= start_time 
+            AND ? <= end_time) > 0 AS is_null;`, [
+            professionalId,
+            start_time,
+            end_time
+        ], (err, rows) => {
+            if (err) throw err
+            if (rows[0].is_null === null) {
+                return res.json({ error: "O profissional não está disponível neste horário!" })
+            }
+            
+            connection.query(`SELECT (SELECT scheduling.id FROM scheduling INNER JOIN professional ON professional.id = scheduling.fk_professional
+                    WHERE professional.id=?
+                        AND scheduling.date = ? 
+                        AND ? >= scheduling.start 
+                        AND ? <= scheduling.end LIMIT 1) < 0 AS time_valid`, [
+                professionalId,
+                date,
+                start_time,
+                start_time
+            ], (err, rows) => {
+                if (err) throw err
+
+                if(rows[0].time_valid == false){
+                    return res.json({ error: "Já existe um agendamento para este horário" })
+                }
+
+                return res.json({ error: false })
+            })
+        })
+    },
+
     async create(req, res) {
         const { date, title, description, start_time, end_time, professionalId, clientId, email } = req.body;
 
-        let status = ""
+        let status = "OCUPADO"
 
         if (clientId) {
             status = "PENDENTE"
-        } else {
-            status = "OCUPADO"
         }
 
         await connection.query(`SELECT (SELECT id FROM professional 
@@ -75,7 +110,7 @@ module.exports = {
                     ], (err, rows) => {
                         if (err) throw err
 
-                        if(clientId){
+                        if (clientId) {
                             let emailTemplate;
 
                             ejs.renderFile(path.join(__dirname, "../views_emails/request_email.ejs"), {
@@ -85,14 +120,14 @@ module.exports = {
                                 scheduling_time: `${formatToHours(data.start, false)} às ${formatToHours(data.end, false)}`
                             }).then(result => {
                                 emailTemplate = result;
-                
+
                                 const msg = {
                                     to: email, // Change to your recipient
                                     from: 'everson.pereira.clear@gmail.com', // Change to your verified sender
                                     subject: 'Nova solicitação de agendamento',
                                     html: emailTemplate
                                 };
-                
+
                                 sgMail.send(msg).then(() => {
                                     (async () => {
                                         return res.json(rows);
@@ -101,10 +136,10 @@ module.exports = {
                                     console.error(err)
                                 })
                             })
-                            .catch(err => {
-                                console.error(err)
-                            });
-                        }else{
+                                .catch(err => {
+                                    console.error(err)
+                                });
+                        } else {
                             return res.json(rows);
                         }
 
@@ -152,9 +187,9 @@ module.exports = {
                     console.error(err)
                 })
             })
-            .catch(err => {
-                console.error(err)
-            });
+                .catch(err => {
+                    console.error(err)
+                });
         })
     },
 
@@ -197,9 +232,9 @@ module.exports = {
                     console.error(err)
                 })
             })
-            .catch(err => {
-                console.error(err)
-            });
+                .catch(err => {
+                    console.error(err)
+                });
         })
     },
 
@@ -241,9 +276,9 @@ module.exports = {
                     console.error(err)
                 })
             })
-            .catch(err => {
-                console.error(err)
-            });
+                .catch(err => {
+                    console.error(err)
+                });
         })
     },
 
