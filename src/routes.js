@@ -58,8 +58,9 @@ routes.put("/professions/:id", auth, ProfessionController.update)
 routes.delete("/professions/:id", auth, ProfessionController.delete)
 
 routes.get("/professions_professionals", auth, ProfessionalProfessionController.index)
+routes.get("/professions_professional/:id", auth, ProfessionalProfessionController.show)
 routes.get("/professions_professionals/:id", auth, ProfessionalProfessionController.selectProfessionalsByProfession)
-routes.post("/professions_professionals", auth, ProfessionalProfessionController.create)
+routes.post("/professions_professionals", auth, ProfessionalProfessionController.updateProfessionalInfo)
 
 routes.post('/payment/payment_intent', auth, PaymentController.createPaymentIntent);
 routes.get('/payment/payment_intent/:id', auth, PaymentController.retrievePaymentIntent);

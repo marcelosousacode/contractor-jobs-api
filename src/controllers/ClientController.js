@@ -33,7 +33,7 @@ module.exports = {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO client (name, email, phone_number, cep, uf, city, address, district, number, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+            connection.query('INSERT INTO client (name, email, phone_number, cep, uf, city, address, district, number, complement, reference, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 user.name,
                 user.email,
                 user.phone_number,
@@ -43,6 +43,8 @@ module.exports = {
                 user.address,
                 user.district,
                 user.number,
+                user.complement,
+                user.reference,
                 passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
@@ -58,8 +60,8 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, cep, uf, address, district, number, city, password } = req.body;
-        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
+        const { name, email, cpf, phone_number, cep, uf, address, district, number, complement, reference, city } = req.body;
+        await connection.query('UPDATE client SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, complement=?, reference=?, updated_at=CURRENT_TIMESTAMP() WHERE client.id=?', [
             name,
             email,
             cpf,
@@ -70,6 +72,8 @@ module.exports = {
             address,
             district,
             number,
+            complement,
+            reference,
             id
         ], (err, rows) => {
             if (err) throw err

@@ -32,7 +32,7 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { name, email, phone_number, cep, uf, city, address, district, number, password } = req.body;
+        const { name, email, phone_number, cpf, cep, uf, city, address, district, number, complement, reference, password } = req.body;
 
         const passwordEncrypted = await crypto.hash(password)
 
@@ -44,16 +44,19 @@ module.exports = {
                 return res.json({ error: "E-mail já registrado!" })
             }
 
-            connection.query('INSERT INTO professional (name, email, phone_number, cep, uf, city, address, district, number, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+            connection.query('INSERT INTO professional (name, email, phone_number, cpf, cep, uf, city, address, district, number, complement, reference, password, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
                 name,
                 email,
                 phone_number,
+                cpf,
                 cep,
                 uf,
                 city,
                 address,
                 district,
                 number,
+                complement,
+                reference,
                 passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
@@ -64,9 +67,9 @@ module.exports = {
 
     async update(req, res) {
         const id = req.params.id;
-        const { name, email, cpf, phone_number, cep, uf, city, address, district, number } = req.body;
+        const { name, email, cpf, phone_number, cep, uf, city, address, district, number, complement, reference, } = req.body;
 
-        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?', [
+        await connection.query('UPDATE professional SET name=?, email=?, cpf=?, phone_number=?, cep=?, uf=?, city=?, address=?, district=?, number=?, complement=?, reference=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?', [
             name,
             email,
             cpf,
@@ -77,6 +80,8 @@ module.exports = {
             address,
             district,
             number,
+            complement,
+            reference,
             id
         ], (err, rows) => {
             if (err) throw err
