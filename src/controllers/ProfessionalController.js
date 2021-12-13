@@ -1,6 +1,8 @@
 const connection = require('../db/connection');
 const crypto = require("../configs/crypto")
 
+const regexPassword = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+
 module.exports = {
     async index(req, res) {
         await connection.query('SELECT * FROM professional', (err, rows) => {
@@ -33,6 +35,12 @@ module.exports = {
 
     async create(req, res) {
         const { name, email, phone_number, cpf, cep, uf, city, address, district, number, complement, reference, password } = req.body;
+
+        if (!password.match(regexPassword)) {
+            return res.json({
+                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+            })
+        }
 
         const passwordEncrypted = await crypto.hash(password)
 
@@ -92,6 +100,12 @@ module.exports = {
     async updatePassword(req, res) {
         const id = req.params.id;
         const { password, newPassword } = req.body;
+
+        if (!newPassword.match(regexPassword)) {
+            return res.json({
+                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+            })
+        }
 
         const passwordEncrypted = await crypto.hash(newPassword)
 

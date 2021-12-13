@@ -2,6 +2,8 @@ const connection = require('../db/connection');
 const jwt = require("jsonwebtoken")
 const crypto = require("../configs/crypto")
 
+const regexPassword = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+
 module.exports = {
     async index(req, res) {
         await connection.query('SELECT * FROM client', (err, rows) => {
@@ -22,6 +24,12 @@ module.exports = {
 
     async create(req, res) {
         const user = req.body;
+
+        if (!user.password.match(regexPassword)) {
+            return res.json({
+                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+            })
+        }
 
         const passwordEncrypted = await crypto.hash(user.password)
 
@@ -48,6 +56,8 @@ module.exports = {
                 passwordEncrypted
             ], (err, rows) => {
                 if (err) throw err
+
+
 
                 const { password, ...userResp } = user
                 user.password = undefined
@@ -85,18 +95,24 @@ module.exports = {
         const id = req.params.id;
         const { password, newPassword } = req.body;
 
+        if (!newPassword.match(regexPassword)) {
+            return res.json({
+                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+            })
+        }
+
         const passwordEncrypted = await crypto.hash(newPassword)
 
         await connection.query('SELECT * FROM client WHERE id=?', [
             id,
         ], (err, rows) => {
 
-            crypto.verify(password, rows[0].password).then(passwordsIsEqual =>{
-                
+            crypto.verify(password, rows[0].password).then(passwordsIsEqual => {
+
                 if (!passwordsIsEqual) {
                     return res.json({ error: "Senha atual incorreta!" })
                 }
-                
+
                 connection.query('UPDATE client SET password=?, updated_at=CURRENT_TIMESTAMP() WHERE id=?', [
                     passwordEncrypted,
                     id
@@ -104,7 +120,7 @@ module.exports = {
                     if (err) throw err
                     return res.json("Senha alterada com sucesso!");
                 })
-                
+
             }).catch(err => {
                 throw err
             })
@@ -131,14 +147,14 @@ module.exports = {
                 UPDATE client 
                 SET photo=?
                 WHERE id=?
-            `, [ photo, id ], (err, rows, fields) => {
-                if(err) {
+            `, [photo, id], (err, rows, fields) => {
+                if (err) {
                     res.status(400).send({
                         error: err.name,
                         message: err.sqlMessage
                     })
                 };
-                
+
                 return res.status(200).send(rows);
             })
         } catch (error) {
