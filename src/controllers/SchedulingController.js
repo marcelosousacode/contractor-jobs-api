@@ -114,10 +114,11 @@ module.exports = {
                             let emailTemplate;
 
                             ejs.renderFile(path.join(__dirname, "../views_emails/request_email.ejs"), {
-                                scheduling_subject: data.title,
-                                scheduling_description: data.description,
-                                scheduling_date: formatDate(data.date),
-                                scheduling_time: `${formatToHours(data.start, false)} às ${formatToHours(data.end, false)}`
+                                link_app: process.env.LINK_APP,
+                                scheduling_subject: title,
+                                scheduling_description: description,
+                                scheduling_date: formatDate(date),
+                                scheduling_time: `${formatToHours(start_time, false)} às ${formatToHours(end_time, false)}`
                             }).then(result => {
                                 emailTemplate = result;
 
@@ -142,8 +143,6 @@ module.exports = {
                         } else {
                             return res.json(rows);
                         }
-
-                        return res.json(rows);
                     })
                 } else {
                     return res.json({ error: "Não é possivel agendar neste horário!" })
