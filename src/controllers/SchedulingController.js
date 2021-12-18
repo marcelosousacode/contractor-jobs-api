@@ -65,7 +65,7 @@ module.exports = {
     },
 
     async create(req, res) {
-        const { date, title, description, start_time, end_time, professionalId, clientId, email } = req.body;
+        const { date, title, description, start_time, end_time, professionalId, clientId, email, servicePrice, paymentId } = req.body;
 
         let status = "OCUPADO"
 
@@ -83,7 +83,7 @@ module.exports = {
         ], (err, rows) => {
             if (err) throw err
             if (rows[0].is_null === null) {
-                return res.json({ error: "Não é possivel agendar neste horário!" })
+                return res.status(400).json({ error: "Não é possivel agendar neste horário!" })
             }
             connection.query(`SELECT (SELECT scheduling.id FROM scheduling INNER JOIN professional ON professional.id = scheduling.fk_professional
                         WHERE professional.id=?
@@ -95,9 +95,25 @@ module.exports = {
                 start_time,
                 start_time
             ], (err, rows) => {
-                if (err) throw err
+                if (err) throw err;
                 if (rows[0].time_valid || rows[0].time_valid === null) {
-                    connection.query('INSERT INTO scheduling (date, title, description, start, end, fk_professional, fk_client, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())', [
+                    connection.query(`
+                        INSERT INTO scheduling (
+                            date, 
+                            title, 
+                            description, 
+                            start, 
+                            end, 
+                            fk_professional, 
+                            fk_client, 
+                            status, 
+                            service_price,
+                            fk_payment_id,
+                            created_at, 
+                            updated_at
+                        ) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP())
+                    `, [
                         date,
                         title,
                         description,
@@ -105,10 +121,15 @@ module.exports = {
                         end_time,
                         professionalId,
                         clientId,
-                        status
-
+                        status,
+                        servicePrice,
+                        paymentId
                     ], (err, rows) => {
-                        if (err) throw err
+                        if (err) {
+                            return res.status(400).json({
+                                error: err
+                            })
+                        }
 
                         if (clientId) {
                             let emailTemplate;
@@ -145,7 +166,7 @@ module.exports = {
                         }
                     })
                 } else {
-                    return res.json({ error: "Não é possivel agendar neste horário!" })
+                    return res.status(400).json({ error: "Não é possivel agendar neste horário!" })
                 }
             })
         })

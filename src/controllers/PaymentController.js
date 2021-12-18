@@ -91,9 +91,16 @@ module.exports = {
         }
     },
     async savePayment(req, res) {
-        const { clientId, professionalId, paymentIntent } = req.body;
+        const {
+            clientId,
+            professionalId,
+            paymentIntent,
+            paidAt,
+            totalPayable,
+            totalPaid
+        } = req.body;
 
-        if(paymentIntent === '') {
+        if (paymentIntent === '') {
             return res.status(400).end({
                 success: false,
                 error: {
@@ -108,12 +115,18 @@ module.exports = {
                 INSERT INTO payment (
                     fk_client,
                     fk_professional,
-                    payment_intent
-                ) VALUES (?, ?, ?)
+                    payment_intent,
+                    paid_at,
+                    total_payable,
+                    total_paid
+                ) VALUES (?, ?, ?, ?, ?, ?)
             `, [
                 clientId,
                 professionalId,
-                paymentIntent
+                paymentIntent,
+                paidAt,
+                totalPayable,
+                totalPaid
             ], (error, rows) => {
                 if (error) {
                     return res.status(400).send({
@@ -121,17 +134,17 @@ module.exports = {
                         error
                     });
                 }
-    
+
                 return res.status(201).json({
                     success: true,
                     rows
                 });
             })
-        } catch(error) {
+        } catch (error) {
             return res.status(400).send({
                 success: false,
                 error
             });
-        } 
+        }
     },
 }
