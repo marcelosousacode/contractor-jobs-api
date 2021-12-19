@@ -14,6 +14,8 @@ module.exports = {
             professional.city,
             professional.rate,
             professional.description,
+            professional.week,
+            professional.unavailable_day,
             professional.start_time,
             professional.end_time,
             professional.price_hour,
@@ -39,6 +41,8 @@ module.exports = {
             professional.city,
             professional.rate,
             professional.description,
+            professional.week,
+            professional.unavailable_day,
             professional.start_time,
             professional.end_time,
             professional.price_hour,
@@ -66,6 +70,8 @@ module.exports = {
             professional.city,
             professional.rate,
             professional.description,
+            professional.week,
+            professional.unavailable_day,
             professional.start_time,
             professional.end_time,
             professional.price_hour,
@@ -82,7 +88,7 @@ module.exports = {
     },
 
     async updateProfessionalInfo(req, res) {
-        const { professionalId, professionId, description, price, start, end } = req.body;
+        const { professionalId, professionId, description, price, week, start, end } = req.body;
 
         await connection.query('DELETE FROM item_professional_profession where fk_professional = ? AND fk_profession != ?',
         [
@@ -110,10 +116,11 @@ module.exports = {
                         ],
                         (err, rows) => {
                             if (err) throw err
-                            connection.query('UPDATE professional SET description=?, price_hour=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
+                            connection.query('UPDATE professional SET description=?, price_hour=?, week=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
                                 [
                                     description,
                                     price,
+                                    week,
                                     start,
                                     end,
                                     professionalId
@@ -126,17 +133,18 @@ module.exports = {
                         }
                         )
                     } else {
-                        console.log("Não Cadastra")
-                        connection.query('UPDATE professional SET description=?, price_hour=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
+                        connection.query('UPDATE professional SET description=?, price_hour=?, week=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
                             [
                                 description,
                                 price,
+                                week,
                                 start,
                                 end,
                                 professionalId
                             ],
                             (err, rows) => {
                                 if (err) throw err
+                                console.log(week)
                                 return res.json(rows)
                             }
                         )
