@@ -32,6 +32,7 @@ routes.get('/professionals/professions_list/:id', auth, ProfessionalController.p
 routes.post('/professionals', ProfessionalController.create);
 routes.put('/professionals/:id', auth, ProfessionalController.update);
 routes.patch('/professionals/:id', auth, ProfessionalController.updatePassword);
+routes.patch('/professional_busy/:id', auth, ProfessionalController.updateBusy);
 routes.delete('/professionals/:id', auth, ProfessionalController.delete);
 
 routes.get('/schedulings', auth, SchedulingController.index);

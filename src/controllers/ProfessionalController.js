@@ -133,6 +133,19 @@ module.exports = {
         })
     },
 
+    async updateBusy(req, res) {
+        const id = req.params.id;
+        const { unavailable_day } = req.body;
+
+        await connection.query('UPDATE professional SET unavailable_day=? WHERE id=?', [
+            unavailable_day,
+            id,
+        ], (err, rows) => {
+            if (err) throw err
+            return res.json("Adicionado com sucesso!");
+        })
+    },
+
     async delete(req, res) {
         const id = req.params.id;
         await connection.query('DELETE FROM professional where id = ?',
