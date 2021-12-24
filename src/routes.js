@@ -25,6 +25,7 @@ routes.patch('/clients/profile_picture/:id', ClientController.updateImage);
 routes.get('/login/:user', UserLoginController.login);
 routes.post('/validateToken', UserLoginController.validateToken);
 routes.get('/user_logged', auth, UserLoginController.userLogged);
+routes.post('/user_logged', UserLoginController.forgotPassword);
 
 routes.get('/professionals', auth, ProfessionalController.index);
 routes.get('/professionals/:id', auth, ProfessionalController.show);
