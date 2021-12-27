@@ -27,7 +27,7 @@ module.exports = {
 
         if (!user.password.match(regexPassword)) {
             return res.json({
-                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+                error: "Senha precisar ter: Letra maiúscula e minúscula (A, z) Caractere numérico (0-9) Caractere especial e no mínimo 8 digitos."
             })
         }
 
@@ -97,7 +97,7 @@ module.exports = {
 
         if (!newPassword.match(regexPassword)) {
             return res.json({
-                error: ["Senha precisar ter: no mínimo 8 digitos, uma letra maiúscula, uma letra minúscula, um número e um caractere especial."]
+                error: "Senha precisar ter: Letra maiúscula e minúscula (A, z) Caractere numérico (0-9) Caractere especial e no mínimo 8 digitos."
             })
         }
 
@@ -110,7 +110,7 @@ module.exports = {
             crypto.verify(password, rows[0].password).then(passwordsIsEqual => {
 
                 if (!passwordsIsEqual) {
-                    return res.json({ error: "Senha atual incorreta!" })
+                    return res.status(400).json({ error: "Senha atual incorreta!" })
                 }
 
                 connection.query('UPDATE client SET password=?, updated_at=CURRENT_TIMESTAMP() WHERE id=?', [
@@ -118,7 +118,7 @@ module.exports = {
                     id
                 ], (err, rows) => {
                     if (err) throw err
-                    return res.json("Senha alterada com sucesso!");
+                    return res.status(200).json(rows);
                 })
 
             }).catch(err => {

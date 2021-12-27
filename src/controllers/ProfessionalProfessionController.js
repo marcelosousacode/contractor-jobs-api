@@ -107,69 +107,36 @@ module.exports = {
 
     async updateProfessionalInfo(req, res) {
         const { professionalId, professionId, description, price, week, start, end } = req.body;
-
-        await connection.query('DELETE FROM item_professional_profession where fk_professional = ? AND fk_profession != ?',
+        if (isNaN(price)) return res.status(400).json({ error: 'Forneça um preço valido'})
+        
+        connection.query('UPDATE professional SET description=?, price_hour=?, week=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
             [
-                professionalId,
-                professionId
-            ], (err, rows) => {
+                description,
+                price,
+                week,
+                start,
+                end,
+                professionalId
+            ],
+            (err, rows) => {
                 if (err) throw err
                 connection.query(`
-                SELECT (SELECT item_professional_profession.id 
-                    FROM item_professional_profession  
-                    WHERE fk_professional=? 
-                    AND fk_profession=?) IS NULL as idIsNull;
-            `,
-                    [
-                        professionalId,
-                        professionId
-                    ],
-                    (err, rows) => {
-                        if (err) throw err
-                        if (rows[0].idIsNull) {
-                            connection.query('INSERT INTO item_professional_profession (fk_professional, fk_profession) VALUES (?, ?);',
-                                [
-                                    professionalId,
-                                    professionId
-                                ],
-                                (err, rows) => {
-                                    if (err) throw err
-                                    connection.query('UPDATE professional SET description=?, price_hour=?, week=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
-                                        [
-                                            description,
-                                            price,
-                                            week,
-                                            start,
-                                            end,
-                                            professionalId
-                                        ],
-                                        (err, rows) => {
-                                            if (err) throw err
-                                            return res.json(rows)
-                                        }
-                                    )
-                                }
-                            )
-                        } else {
-                            connection.query('UPDATE professional SET description=?, price_hour=?, week=?, start_time=?, end_time=?, updated_at=CURRENT_TIMESTAMP() WHERE professional.id=?;',
-                                [
-                                    description,
-                                    price,
-                                    week,
-                                    start,
-                                    end,
-                                    professionalId
-                                ],
-                                (err, rows) => {
-                                    if (err) throw err
-                                    console.log(week)
-                                    return res.json(rows)
-                                }
-                            )
+                    DELETE FROM item_professional_profession 
+                    where fk_professional = ?;
+                `,[
+                    professionalId
+                ],
+                (err, rows) => {
+                    if (err) throw err
+                    connection.query(`INSERT INTO item_professional_profession (fk_professional, fk_profession) VALUES ${professionId.map(id => `(${professionalId}, ${id})`)};`,
+                        (err, rows) => {
+                            if (err) throw err
+                            return res.json(rows)
                         }
-                    }
-                )
-            })
+                    )
+                })
+            }
+        )
     },
 
     async delete(req, res) {
