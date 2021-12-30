@@ -116,7 +116,7 @@ module.exports = {
     },
 
     async verifyTokenPassword(req, res) {
-        const { token, user } = req.body
+        const { token, user } = req.params
 
         if (user != "client" && user != "professional") {
             return res.json({ error: "O token está invalido!!" })
@@ -136,7 +136,9 @@ module.exports = {
     },
 
     async changePassword(req, res) {
-        const { token, password, user } = req.body
+        const { password, user } = req.body
+        const { token } = req.params
+
         const passwordEncrypted = await crypto.hash(password)
 
         await connection.query(`UPDATE ${user} SET password=?, reset_password_token="" WHERE reset_password_token=?`, [

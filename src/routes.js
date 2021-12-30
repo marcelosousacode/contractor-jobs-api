@@ -26,7 +26,8 @@ routes.get('/login/:user', UserLoginController.login);
 routes.post('/validateToken', UserLoginController.validateToken);
 routes.get('/user_logged', auth, UserLoginController.userLogged);
 routes.post('/forgot_password', UserLoginController.forgotPassword);
-routes.post('/change_password', UserLoginController.changePassword);
+routes.patch('/change_password/:token', UserLoginController.changePassword);
+routes.get('/verify_token_password/:token/:user', UserLoginController.verifyTokenPassword);
 
 routes.get('/professionals', auth, ProfessionalController.index);
 routes.get('/professionals/:id', auth, ProfessionalController.show);
@@ -49,7 +50,7 @@ routes.patch('/cancel_scheduling/:id', auth, SchedulingController.cancelScheduli
 routes.patch('/confirm_scheduling/:id', auth, SchedulingController.confirmScheduling)
 routes.patch('/notrealized_scheduling/:id', auth, SchedulingController.notRealizedScheduling)
 
-routes.get('/schedulings_professional/:id', auth, SchedulingProfessionalController.index);
+routes.get('/schedulings_professional/:id', SchedulingProfessionalController.index);
 
 routes.get('/schedulings_client/:id', auth, SchedulingClientController.index)
 routes.get('/requests_schedulings/:id', auth, SchedulingClientController.show)
@@ -60,9 +61,9 @@ routes.post("/professions", auth, ProfessionController.create)
 routes.put("/professions/:id", auth, ProfessionController.update)
 routes.delete("/professions/:id", auth, ProfessionController.delete)
 
-routes.get("/professions_professionals", auth, ProfessionalProfessionController.index)
-routes.get("/professions_professional/:id", auth, ProfessionalProfessionController.show)
-routes.get("/professions_professionals/:id", auth, ProfessionalProfessionController.selectProfessionalsByProfession)
+routes.get("/professions_professionals", ProfessionalProfessionController.index)
+routes.get("/professions_professional/:id", ProfessionalProfessionController.show)
+routes.get("/professions_professionals/:id", ProfessionalProfessionController.selectProfessionalsByProfession)
 routes.post("/professions_professionals", auth, ProfessionalProfessionController.updateProfessionalInfo)
 
 routes.post('/payment/payment_intent', auth, PaymentController.createPaymentIntent);
