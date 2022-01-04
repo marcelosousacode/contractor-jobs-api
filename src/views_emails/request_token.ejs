@@ -1,0 +1,28 @@
+<div style="width: unset; height: 100%; max-width: unset; padding: 10%; display: flex; align-items: center; justify-content: center; background: #B4AEE8; overflow-x: hidden;">
+    <article style="text-align: justify; color: black; width: 100%; max-width: 100%; background: white; padding: 5%;">
+        <picture style="width: 100%; display: flex; align-items: center; justify-content: center;">
+            <img src="https://clear-bicos-react.herokuapp.com/static/media/logo.f0a3edf167b365f73471.png"
+                alt="logo da SuperPros" width="200" height="auto" style="margin: 10px auto;" />
+        </picture>
+        <h2 style="color: black;">Código de verificação</h2>
+        <p>Olá, Sr (a) <strong><em>
+                    <%= user_name %>
+                </em></strong>.</p>
+        <p>Agradecemos pelo seu interesse em se inscrever na SuperPros. Para finalizar o seu cadastro, digite o código
+            abaixo no campo de entrada da página de verificação do SuperPros.</p>
+        <form style="margin: 10px 0%; width: 100%; text-align: center;">
+            <label style="margin: 0 auto; font-size: medium; font-weight: bold; color: #292929;">Chave de
+                verificação:</label><br>
+            <input
+                style="font-size: 4em; text-align: center; border: none; margin: 10px 0; color: #6610F2; font-weight: bolder; max-width: 100%;"
+                type="text" value="<%= token %>" disabled />
+        </form>
+        <small style="text-align: center; font-weight: 600; color: #5978EA;">Essa chave irá expirar em 10
+            minutos.</small>
+        <p>Caso não tenha se inscrito em nossa plataforma, somente ignore esse e-mail. Pedimos desculpas pelo incômodo.
+        </p>
+        <cite style="margin-bottom: 50px;">
+            SuperPros,
+        </cite>
+    </article>
+</div>

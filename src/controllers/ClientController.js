@@ -57,15 +57,12 @@ module.exports = {
             ], (err, rows) => {
                 if (err) throw err
 
-
-
                 const { password, ...userResp } = user
                 user.password = undefined
 
-                return res.send(rows);
+                return res.send(userResp);
             })
         })
-
     },
 
     async update(req, res) {
@@ -126,7 +123,6 @@ module.exports = {
             })
         })
     },
-
     async delete(req, res) {
         const id = req.params.id;
         await connection.query('DELETE FROM client where id = ?',

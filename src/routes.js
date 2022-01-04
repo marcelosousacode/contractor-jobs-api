@@ -13,6 +13,7 @@ const PaymentController = require('./controllers/PaymentController');
 const SchedulingClientController = require("./controllers/SchedulingClientController")
 
 const auth = require("./configs/auth");
+const RegistrationController = require('./controllers/RegistrationController');
 
 routes.get('/clients', auth, ClientController.index);
 routes.get('/clients/:id', auth, ClientController.show);
@@ -71,5 +72,11 @@ routes.get('/payment/payment_intent/:id', auth, PaymentController.retrievePaymen
 routes.post('/payment/payment_intent/confirm', auth, PaymentController.confirmPaymentIntent);
 routes.post('/payment/payment_method', auth, PaymentController.createPaymentMethod);
 routes.post('/payment', auth, PaymentController.savePayment);
+
+routes.post('/request_verifying_token/', RegistrationController.requestToken);
+routes.post('/verify_token', RegistrationController.verifyToken)
+routes.post('/verification/send_sms', RegistrationController.sendSMS)
+routes.post('/verification/send_email', RegistrationController.sendEmail)
+routes.patch('/request_verifying_token', RegistrationController.retryRequestToken)
 
 module.exports = routes;
